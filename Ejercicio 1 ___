@@ -1,0 +1,71 @@
+//    F  U  N  C  I  O  N  E  S 
+/* 
+Nombre:         DECODIFICADOR ([SEÑAL A DECODIFICAR])
+Descripcion:    Decodifica una senal con ruido, y devuelve la senal original en codigo ASCII
+
+*/
+// P A R A M E T R O S     C O N F I G U R A B L E S
+/********************************************/
+
+function [z]= decodificador(senal)//Funcion principal, Decodifica una senal con ruido y devuelve la senal original en codigo ASCII
+    vector = 0:0.01:0.49;
+    triangulo = ondatriangular(vector);
+    tren = tren(triangulo);
+    multi = multiplicador(tren, senal);
+    mensaje = decode(multi);
+    k = bindec(mensaje);
+    z = ascii(k)
+endfunction
+
+function[y] = ondatriangular(vec) //A partir de un vector de X longitud, crea una onda triangular de longitud X, y con catetos de pendiente 20
+    x = length(vec);
+    z = x/2;
+    for i = 1:z
+        y(i)=20*vec(i);
+    end
+    for i = z+1:x
+        y(i)=-20*vec(i)+10;
+    end
+endfunction
+
+function[y] = tren(onda) //Crea una secuencia de 146 ondas iguales, sirve para crear un tren de triangulos.
+    y = onda;
+    for i=1:146
+        y = [y; onda]
+    end
+endfunction
+
+function[y]=multiplicador(vec, onda)//Multiplica dos señales valor a valor.
+    z = (vec)'
+    y = (z).*(onda)
+endfunction
+
+function[z]=decode(vec)//Funcion que asigna un valor de 0 o 1, a cada conjunto de 50 valores de una senal, si la sumo de los 50 numeros es mayor a cero asigna un 1, si la suma es menor que cero, asigna un 0.
+    z = zeros(1:1:147)
+    for j=1:147
+        y = zeros(1:1:50)
+    for i=1:50
+        y(i)= vec(50*(j-1)+i)
+    end
+    k = sum(y)
+    if k > 0 then
+        z(j)=1
+    end
+    if k < 0 then
+        z(j)=0
+    end
+end
+endfunction
+
+function [z]= bindec(vec)//Funcion que divide a un vector en strings de 7 caracteres, y los convierte de binario a decimales.
+    z = zeros(1:1:21)
+    for j=1:21
+        y = zeros(1:1:7)
+    for i=1:7
+        y(i)= vec(7*(j-1)+i)
+    end
+    k = strcat(string(y))
+    p = bin2dec(k)
+    z(j) = p
+end
+endfunction
