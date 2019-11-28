@@ -1,0 +1,44 @@
+//Onda Triangular
+t1=0:0.000125:0.024875;
+t2=0.025:0.000125:0.049875;
+y1=200*t1;
+y2=-200*t2+10;
+sd2=[y1 y2];
+
+function y=codificador(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,sd2]
+        else
+            a=[a,-sd2]
+        end
+    end
+    y=a
+endfunction
+
+function y=filtro_ej2(x)
+    n=(size(x)(2)/400);
+    for i=1:n
+        z=x(400*(i-1)+1:400*(i-1)+400);
+        if conv(z,sd2)(400)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+function y=deco_ej2(x)
+    z=filtro_ej2(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
