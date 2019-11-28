@@ -1,0 +1,38 @@
+// EJERCICIO 3
+// OBJ: Crear un protocolo de generación, codificación y decodificacion de una señal muestreada a 8KHz 7N1
+//      La idea es mandar bytes conteniendo información del ASCII y un bit de control de comunicación
+
+/*         __   __   __   __   __   __   __   __
+   MSJ:   | d6 | | d5 | | d4 | | d3 | | d2 | | d1 | | d0 | | CB |
+           ¯¯¯¯   ¯¯¯¯   ¯¯¯¯   ¯¯¯¯   ¯¯¯¯   ¯¯¯¯   ¯¯¯¯   ¯¯¯¯  
+           
+   d6-d0: Dato en ASCII 7 bits. Letra o numero
+   CB:    "Control Bit" 
+          1: Inicia/Termina el msj
+          0: Se está transmitiendo un msj
+          
+Podemos simplificar cada msj como 'MSJ'+CB 
+Por ejemplo: 'H'+1    Comienza el msj
+             'O'+0
+             'L'+0
+             'A'+1    Termina el msj
+Además para iniciar la conversación se enviará 3 bytes '11111111' luego un '00000000'. El siguiente byte es el primero del mensaje ('MSJ'+1)
+Luego, se comunica todo hasta recibir un bit final ('MSJ+1')
+
+*/
+
+//                                            F  U  N  C  I  O  N  E  S                                                                                 
+
+//Nota: Hasta ahora se asume que las transmisiones no tienen ruido agregado.
+  
+/* Codificación: Recibe una frase y la adecua al protocolo creado separando por palabras. 
+                 Para ello analiza el largo del string. Separa en palabras. Convierte a Binario cada caracter ASCII.
+*/
+function y=codificacion(x)
+    
+endfunction
+
+/* MensajeAMandar: Recibe una frase pasada por Codificación y le agrega las partes necesarias segun el protocolo para iniciar una conversación */
+
+
+/*Decodificacion: Asume que recibe binarios de caracteres ASCII bajo el mismo protocolo y devuelve la palabra enviada */
