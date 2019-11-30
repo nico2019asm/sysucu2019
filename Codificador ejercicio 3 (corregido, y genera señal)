@@ -1,0 +1,34 @@
+//------------------- Ejercicio 3 ----------------
+function y=cod_ej3(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:(size(z)(2)/7)
+        t=0
+        for j=1:7
+            if z(7*(i-1)+1:7*(i-1)+7)(j)=='1' then
+                t=t+1
+            else
+            end
+        end
+        if modulo(t,2)==0 then
+            a=[a,z(7*(i-1)+1:7*(i-1)+7),'0']
+        else
+            a=[a,z(7*(i-1)+1:7*(i-1)+7),'1']
+        end
+        if i~=(size(z)(2)/7) then
+            a=[a,'0']
+        else
+            a=[a,'1']
+        end
+    end
+    a=[string(ones(1:27)),string(zeros(1:9)),a]
+    b=[]
+    for i=1:size(a)(2)
+        if a(i)=='1' then
+            b=[b,sd2]
+        else
+            b=[b,-sd2]
+        end
+    end
+    y=b
+endfunction
