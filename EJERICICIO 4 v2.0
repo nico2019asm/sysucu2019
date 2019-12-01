@@ -275,7 +275,7 @@ function y=filtro_sinc(x)
     n=(size(x)(2)/16000); //////
     for i=1:n
         z=x(16000*(i-1)+1:16000*(i-1)+16000);
-        if conv(z,sinc_wave)(16000)>0 then   /////DONDE ESTAN LOS SIGNOS DE PREGUNTA VA UN VALOR QUE NO LOGRO HALLAR
+        if conv(z,sinc_wave)(16000)>0 then  
             y(:,i)=1;
         else
             y(:,i)=0;
