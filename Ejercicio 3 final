@@ -1,0 +1,151 @@
+//------------------- Ejercicio 3 ----------------
+
+
+// Codificador generador de señal
+function y=cod_ej3(x,f)
+    //Onda Triangular
+    t1=0:1/f:0.025-(1/f);
+    t2=0.025:1/f:0.05-(1/f);
+    y1=200*t1;
+    y2=-200*t2+10;
+    sd=[y1 y2];
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:(size(z)(2)/7)
+        t=0
+        for j=1:7
+            if z(7*(i-1)+1:7*(i-1)+7)(j)=='1' then
+                t=t+1
+            else
+            end
+        end
+        if modulo(t,2)==0 then
+            a=[a,z(7*(i-1)+1:7*(i-1)+7),'0']
+        else
+            a=[a,z(7*(i-1)+1:7*(i-1)+7),'1']
+        end
+        if i==(size(z)(2)/7) then
+            a=[a,'1']
+        elseif i==1 then
+            a=[a,'1']
+        else
+            a=[a,'0']
+        end
+    end
+//    a=[string(ones(1:27)),string(zeros(1:9)),a]
+    b=[]
+    for i=1:size(a)(2)
+        if a(i)=='1' then
+            b=[b,sd]
+        else
+            b=[b,-sd]
+        end
+    end
+    y=b
+endfunction
+
+
+
+// Decodificador
+
+function y=deco_ej3(x,f)
+    //Onda Triangular
+    t1=0:1/f:0.025-(1/f);
+    t2=0.025:1/f:0.05-(1/f);
+    y1=200*t1;
+    y2=-200*t2+10;
+    sd=[y1 y2];
+    z1=x
+    while abs(sum(conv(sd,z1(1:f*0.05))))<(8.3*(f*0.05))
+        z1=z1(10:length(z1))
+    end
+    while modulo(length(z1),(f*0.05))~=0
+            z1=[z1,0]
+    end
+    n=(length(z1)/(0.05*f))
+    for i=1:n
+        z2=z1((f*0.05*(i-1)+1):(f*0.05*(i-1)+f*0.05))
+        if sum(conv(sd,z2))>(8.3*(f*0.05)) then
+            z(:,i)=1
+        elseif sum(conv(sd,z2))<-(8.3*(f*0.05)) then
+            z(:,i)=0
+        else
+        end
+    end
+    a=[]
+    for i=1:(length(z)/9)
+        t=0
+        for j=1:7
+            if z(9*(i-1)+1:9*(i-1)+9)(j)==1 then
+                t=t+1
+            else
+                t=t
+            end
+        end
+        if modulo(t,2)==z(9*(i-1)+1:9*(i-1)+9)(8) then
+            a=[a,z(9*(i-1)+1:9*(i-1)+9)(1:7)]
+        else    
+            a=[a,0,1,1,1,1,1,1]
+        end
+        b=0
+        for k=1:7
+            b=b+(a(7*(i-1)+1:7*(i-1)+7)(k)*2^(7-k))
+        end
+        c(i)=b;
+    end
+    y=ascii(c)
+    
+endfunction
+
+
+
+// Decodificador con Fourier
+
+function y=deco_ej3F(x,f)
+    //Onda Triangular
+    t1=0:1/f:0.025-(1/f);
+    t2=0.025:1/f:0.05-(1/f);
+    y1=200*t1;
+    y2=-200*t2+10;
+    sd=[y1 y2];
+    z1=x
+    while abs(sum(ifft(fft(sd).*fft(z1(1:f*0.05)))))<(8.3*(f*0.05))
+        z1=z1(10:length(z1))
+    end
+    while modulo(length(z1),(f*0.05))~=0
+            z1=[z1,length(z1)-10]
+    end
+    n=(length(z1)/(0.05*f))
+    for i=1:n
+        z2=z1((f*0.05*(i-1)+1):(f*0.05*(i-1)+f*0.05))
+        if sum(ifft(fft(sd).*fft(z2)))>(8.3*(f*0.05)) then
+            z(:,i)=1
+        elseif sum(ifft(fft(sd).*fft(z2)))<-(8.3*(f*0.05)) then
+            z(:,i)=0
+        else
+        end
+    end
+    a=[]
+    for i=1:(length(z)/9)
+        t=0
+        for j=1:7
+            if z(9*(i-1)+1:9*(i-1)+9)(j)==1 then
+                t=t+1
+            else
+                t=t
+            end
+        end
+        if modulo(t,2)==z(9*(i-1)+1:9*(i-1)+9)(8) then
+            a=[a,z(9*(i-1)+1:9*(i-1)+9)(1:7)]
+        else    
+            a=[a,0,1,1,1,1,1,1]
+        end
+        b=0
+        for k=1:7
+            b=b+(a(7*(i-1)+1:7*(i-1)+7)(k)*2^(7-k))
+        end
+        c(i)=b;
+    end
+    y=ascii(c)
+    
+endfunction
