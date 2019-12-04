@@ -1,0 +1,53 @@
+//-------------Ejercicio 2
+
+//Onda Triangular
+t1=0:0.000125:0.024875;                             //amplitud 5 y periodo 0,05 segundos
+t2=0.025:0.000125:0.049875;
+y1=200*t1;
+y2=-200*t2+10;
+sd2=[y1 y2];
+
+function y=cod_ej2(x)                               //funcion codificadora. x es el mensaje a codificar (entre "")
+    z=strsplit(strcat(dec2bin(ascii(x))))'          //se convierte cada caracter a binario y se guardan los bits en el vector z
+    a=[]
+    for i=1:size(z)(2)                              //se recorre el vector z 
+        if z(i)=='1' then                           //cuando hay un '1', se concatena un pulso triangular en el vector a
+            a=[a,sd2]
+        else
+            a=[a,-sd2]                              //cuando hay un '0', se concatena un pulso triangular negativo
+        end
+    end
+    y=a                                             //la funcion devuelve el vector señal
+endfunction
+
+function y=filtro_ej2(x)                            //funcion filtro. x es la señal a filtrar
+    z1=x
+    a=0
+    while abs(sum(ifft(fft(sd2).*fft(z1(1:400)))))<900000   //si el comienzo de la señal no supera un umbral, se considera como ruido
+        z1=z1(10:size(z1,2))                                //mientras no se supere el umbral, se decartan los primeros 10 valores del vector señal
+    end
+    while modulo(length(z1),400)~=0                         //si la cantidad de valores no es divisible entre 400, no se puede recorrer la señal de a tramos
+        z1=z1(1:length(z1)-10)                              //mientras no sea divisible, se descartan los ultimos 10 valores
+    end
+    for i=1:size(z1,2)/400
+        z2=z1((400*(i-1)+1):(400*(i-1)+400))                //se toma el tramo de la señal de mismo tamaño qie la onda triangular
+        if sum(ifft(fft(sd2).*fft(z2)))>900000 then         //si la suma de los valores del vector transformada rapida inversa de Fourier supera un umbral, es un 1
+            y(:,i)=1
+        elseif sum(ifft(fft(sd2).*fft(z2)))<-900000 then
+            y(:,i)=0                                        //si se supera un umbral negativo, es un 0
+        end
+    end                                                     //la funcion devuelve un vector con los unos y ceros que se transmitieron en la señal
+endfunction
+
+function y=deco_ej2(x)
+    z=filtro_ej2(x);                                        //para decodificar la señal x primero se llama a la funcion filtro
+    for i=1:(size(z)(2)/7)                                  //luego se recorre el vector de bits, de a tramos de 7 (1 caracter)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));                             //se recorren los 7 bits, se convierte a decimal y ce guardan los valores en un vector c
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)                                              //se devuelve el mensaje decodificado
+endfunction
