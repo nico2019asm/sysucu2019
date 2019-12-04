@@ -2,16 +2,18 @@
 
 
 // Codificador generador de señal
-function y=cod_ej3(x,f)
-    //Onda Triangular
-    t1=0:1/f:0.025-(1/f);
+
+function y=cod_ej3(x,f)                             //codificador ejercicio 3, x es la frase a codificar(entre "") y f la frecuencia deseada
+
+    //Onda Triangular                               //primero se genera la onda en la cual se basa la codificacion
+    t1=0:1/f:0.025-(1/f);                           //el triangulo es de amplitud 5, y el periodo depende de la frecuencia deseada
     t2=0.025:1/f:0.05-(1/f);
     y1=200*t1;
     y2=-200*t2+10;
-    sd=[y1 y2];
-    z=strsplit(strcat(dec2bin(ascii(x))))'
+    sd=[y1 y2];                                     //el nombre de la onda es "sd"
+    z=strsplit(strcat(dec2bin(ascii(x))))'          //se convierte la frase a ascii y se guarda cada bit como string en un vector z (guardar los bits como strings fue la forma mas facil)
     a=[]
-    for i=1:(size(z)(2)/7)
+    for i=1:(size(z)(2)/7)                          //dentro de los primeros 7 bits del vector, se cuenta la cantidad de veces que aparezca '1'
         t=0
         for j=1:7
             if z(7*(i-1)+1:7*(i-1)+7)(j)=='1' then
@@ -19,88 +21,87 @@ function y=cod_ej3(x,f)
             else
             end
         end
-        if modulo(t,2)==0 then
-            a=[a,z(7*(i-1)+1:7*(i-1)+7),'0']
+        if modulo(t,2)==0 then                      //se chequea si esa cantidad es par
+            a=[a,z(7*(i-1)+1:7*(i-1)+7),'0']        //si hay paridad, se agrega un octavo bit '0'
         else
-            a=[a,z(7*(i-1)+1:7*(i-1)+7),'1']
+            a=[a,z(7*(i-1)+1:7*(i-1)+7),'1']        //si no hay paridad, se agrega un octavo bit '1'
         end
-        if i==(size(z)(2)/7) then
-            a=[a,'1']
-        elseif i==1 then
-            a=[a,'1']
+        if i==1 then
+            a=[a,'1']                               //si es el primer caracter a codificar, se agrega un noveno bit de start '1'
+        elseif i==(size(z)(2)/7) then
+            a=[a,'1']                               //si es el ultimo caracter , se agrega bit de stop '1'
         else
-            a=[a,'0']
+            a=[a,'0']                               //si no es ni el primero ni el ultimo, se agrega '0'
         end
     end
-//    a=[string(ones(1:27)),string(zeros(1:9)),a]
     b=[]
-    for i=1:size(a)(2)
+    for i=1:size(a)(2)                              //ahora se genera la señal
         if a(i)=='1' then
-            b=[b,sd]
+            b=[b,sd]                                //cuando aparece un 1, se le concatena una onda triangular (sd)
         else
-            b=[b,-sd]
+            b=[b,-sd]                               //cuando aparece un 0, se le concatena la misma onda pero hacia abajo
         end
     end
-    y=b
+    y=b                                             //la funcion devuelve la señal
 endfunction
 
 
 
 // Decodificador
 
-function y=deco_ej3(x,f)
+function y=deco_ej3(x,f)                                    //funcion decodificadora, x es la señal a decodificar, f debe ser la frecuencia en la cual se codifico dicha señal
     //Onda Triangular
-    t1=0:1/f:0.025-(1/f);
+    t1=0:1/f:0.025-(1/f);                                   //misma onda triangular para comparar con la señal
     t2=0.025:1/f:0.05-(1/f);
     y1=200*t1;
     y2=-200*t2+10;
     sd=[y1 y2];
     z1=x
-    while abs(sum(conv(sd,z1(1:f*0.05))))<(8.3*(f*0.05))
-        z1=z1(10:length(z1))
-    end
-    while modulo(length(z1),(f*0.05))~=0
-            z1=[z1,0]
+    while abs(sum(conv(sd,z1(1:f*0.05))))<(8.3*(f*0.05))    //primero se chequea la primera parte de la señal para descartar ruido, chequeando la convolucion entre sd y el primer periodo de la señal
+        z1=z1(10:length(z1))                                //mientras esta convolucion no supere un umbral, se puede decir que esta parte de la señal es ruido, entonces se descartan los primeros 10 valores del vector señal
+    end                                                     //cuando se supera el umbral, se puede decir que se encontro el primer triangulo (bit)
+    while modulo(length(z1),(f*0.05))~=0                    //luego se chequea el final, si el vector señal no tiene cantidad de valores divisible entre el periodo de la onda, no se puede recorrer toda la señal correctamente
+        z1=(z1:length(z1)-10)                               //mientras la cantidad de valores no sea divisible, se descartan los ultimos 10 valores dl vector
     end
     n=(length(z1)/(0.05*f))
-    for i=1:n
+    for i=1:n                                               //se recorre la señal en periodos iguales al largo de la onda triangular
         z2=z1((f*0.05*(i-1)+1):(f*0.05*(i-1)+f*0.05))
-        if sum(conv(sd,z2))>(8.3*(f*0.05)) then
-            z(:,i)=1
+        if sum(conv(sd,z2))>(8.3*(f*0.05)) then             //para filtrar la señal, se hace la convolucion entre sd y el tramo de señal que se este chequeando       
+            z(:,i)=1                                        //si la suma de todos los valores de la convolucion supera un umbral positivo, se puede decir que este tramo de la señal representa un 1
         elseif sum(conv(sd,z2))<-(8.3*(f*0.05)) then
-            z(:,i)=0
+            z(:,i)=0                                        //si la suma de todos los valores de la convolucion supera un umbral negativo, se puede decir que este tramo de la señal representa un 0
         else
         end
-    end
+    end                                                     //todos los bits transmitidos en la señal quedan guardados en el vector z
     a=[]
-    for i=1:(length(z)/9)
+    for i=1:(length(z)/9)                                   //se recorre el vector z de a tramos de 9 bits (9 bits representan un caracter, un bit de paridad y uno de control)
         t=0
-        for j=1:7
+        for j=1:7                                           //se chequea la paridad contando cada vez que haya un 1 en los primeros 7 bits del tramo de 9
             if z(9*(i-1)+1:9*(i-1)+9)(j)==1 then
                 t=t+1
             else
                 t=t
             end
         end
-        if modulo(t,2)==z(9*(i-1)+1:9*(i-1)+9)(8) then
+        if modulo(t,2)==z(9*(i-1)+1:9*(i-1)+9)(8) then      //si la paridad coincide con el octavo bit, la paridad es correcta, se toman los primeros 7 bits y se guardan en el vector a
             a=[a,z(9*(i-1)+1:9*(i-1)+9)(1:7)]
         else    
-            a=[a,0,1,1,1,1,1,1]
+            a=[a,0,1,1,1,1,1,1]                             //si la paridad no coincide, se descarta el caracter y se guarda el caracter "?" en el vector a
         end
         b=0
-        for k=1:7
-            b=b+(a(7*(i-1)+1:7*(i-1)+7)(k)*2^(7-k))
+        for k=1:7                                           //se recorre el vector a de a tramos de 7 bits
+            b=b+(a(7*(i-1)+1:7*(i-1)+7)(k)*2^(7-k))         //los 7 bits se convierten a un decimal y se guarda en el vector c
         end
         c(i)=b;
     end
-    y=ascii(c)
+    y=ascii(c)                                              //la funcion devuelve el mensaje
     
 endfunction
 
 
 
-// Decodificador con Fourier
-
+// Decodificador con Fourier                                //la funcion deco_ej3F es la misma que deco_ej3 pero en lugar de usar convolucion, se utiliza transformada rapida de Fourier
+                                                            //(deberia ser mas rapida y eficiente)
 function y=deco_ej3F(x,f)
     //Onda Triangular
     t1=0:1/f:0.025-(1/f);
@@ -113,7 +114,7 @@ function y=deco_ej3F(x,f)
         z1=z1(10:length(z1))
     end
     while modulo(length(z1),(f*0.05))~=0
-            z1=[z1,length(z1)-10]
+            z1=(z1:length(z1)-10)
     end
     n=(length(z1)/(0.05*f))
     for i=1:n
