@@ -1,0 +1,537 @@
+/////EJERCICIO 4
+//PARTE A -- ONDA CUADRADA  --  DISTINTAS DURACIONES (TODOS A 8KHz)
+
+//PRIMER ONDA CUADRADA
+//ALTURA 5, DURACION 0.5 s    ----> 1/2 segundo son 4000 muestras
+
+g1 = linspace(0,0.4999875,4000);
+k1 = ones(g1)*5;
+wave1 = k1;
+
+//SEGUNDA ONDA CUADRADA
+//ALTURA 0.75, DURACION 1 s    ---> 1segundo son 8000 muestras
+
+g2 = linspace(0,0.999875,8000);
+k2 = ones(g2)*(0.75);
+wave2 = k2;
+
+//TERCER ONDA CUADRADA
+//ALTURA 0.5, DURACION 0,02 s ----> 160 muestras
+
+g3 = linspace(0,0.0199875,160);
+k3 = ones(g3)*(0.5);
+wave3 = k3;
+
+//CUARTA ONDA CUADRADA
+//ALTURA 0.4, DURACION 0,1 s ----> 800 muestras
+
+g4 = linspace(0,0.099875,800);
+k4 = ones(g4)*(0.4);
+wave4 = k4;
+
+//////////////////////////////////////////////////////////////////////
+///FUNCIONES DE CODIFICACION Y DECODIFICACION PARA LAS ONDAS CUADRADAS
+//////////////////////////////////////////////////////////////////////
+
+//////ONDA 1: altura 5 y duracion 1/2 segundo
+
+///////               CODIFICADOR (ONDA 1)
+function y=encoder1(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,wave1]
+        else
+            a=[a,-wave1]
+        end
+    end
+    y=a
+endfunction
+
+/////////                    DECODIFICADOR (ONDA 1)
+function y=decoder1(x)
+    z=filtro_ej4_1(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+////////////               FILTRO (ONDA 1)
+function y=filtro_ej4_1(x)
+    n=(size(x)(2)/4000); //////
+    for i=1:n
+        z=x(4000*(i-1)+1:4000*(i-1)+4000);
+        if conv(z,wave1)(3000)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+//////ONDA 2: altura 0.75 y duracion 1 segundos-------------
+///////               CODIFICADOR (ONDA 2)
+
+function y=encoder2(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,wave2]
+        else
+            a=[a,-wave2]
+        end
+    end
+    y=a
+endfunction
+
+/////////                    DECODIFICADOR (ONDA 2)
+function y=decoder2(x)
+    z=filtro_ej4_2(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+////////////               FILTRO (ONDA 2)
+function y=filtro_ej4_2(x)
+    n=(size(x)(2)/8000); //////
+    for i=1:n
+        z=x(8000*(i-1)+1:8000*(i-1)+8000);
+        if conv(z,wave2)(6000)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+//////ONDA 3: altura 0.5 y duracion 0,02 segundos-------------------------
+
+///////               CODIFICADOR (ONDA 3)
+function y=encoder3(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,wave3]
+        else
+            a=[a,-wave3]
+        end
+    end
+    y=a
+endfunction
+
+/////////                    DECODIFICADOR (ONDA 3)
+function y=decoder3(x)
+    z=filtro_ej4_3(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+////////////               FILTRO (ONDA 3)
+function y=filtro_ej4_3(x)
+    n=(size(x)(2)/160); //////
+    for i=1:n
+        z=x(160*(i-1)+1:160*(i-1)+160);
+        if conv(z,wave3)(120)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+//////ONDA 4: altura 0.4 y duracion 0,1 segundos---------------------------
+
+///////               CODIFICADOR (ONDA 4)
+function y=encoder4(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,wave4]
+        else
+            a=[a,-wave4]
+        end
+    end
+    y=a
+endfunction
+
+/////////                    DECODIFICADOR (ONDA 4)
+function y=decoder4(x)
+    z=filtro_ej4_4(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+////////////               FILTRO (ONDA 4)
+function y=filtro_ej4_4(x)
+    n=(size(x)(2)/800); //////
+    for i=1:n
+        z=x(800*(i-1)+1:800*(i-1)+800);
+        if conv(z,wave4)(600)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+//////ONDA CUADRADA PARAMETRICA, FILTRO, CODIFICADOR, DECODIFICADOR
+
+///ONDA CUADRADA PARAMETRICA -- duracion a, altura b
+///FUNCION QUE GENERA LA ONDA PARAMETRICA
+function w=wave_p(a,b)
+    c = a -0.000125;
+    d = a * 8000;
+    gp = linspace(0,c,d);
+    kp = ones(gp)*b;
+    w = kp;
+endfunction
+
+///////               CODIFICADOR (ONDA PARAMETRICA)
+function y=encoder_p(x,a,b)
+    ww = wave_p(a,b);
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,ww]
+        else
+            a=[a,-ww]
+        end
+    end
+    y=a
+endfunction
+
+/////////                    DECODIFICADOR (ONDA PARAMETRICA)
+function y=decoder_p(x,a,b)
+    z=filtro_ej4_p(x,a,b);
+    d=a*8000;
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+////////////               FILTRO (ONDA PARAMETRICA)
+function y=filtro_ej4_p(x,a,b)
+    ww = wave_p(a,b);
+    d=a*8000;
+    n=(size(x)(2)/d); 
+    for i=1:n
+        z=x(d*(i-1)+1:d*(i-1)+d);
+        e=(3)*d/4;
+        if conv(z,ww)(e)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+
+//--------------------------------------
+//--------------------------------------
+//--------------------------------------
+//--------------------------------------
+
+
+//PARTE B ---> CODIFICAR USANDO LA FUNCION SENO CARDINAL (f = 8KHz)
+//PRIMERO SE PRUEBA CON UNA ELECCION CUALQUIERA, POR EJEMPPLO ELIGO A=10, a = 1 
+
+///GENERAMOS LA ONDA, USANDO LA FUNCION SINC DE SCILAB 
+//DURACION DE ONDA: 2s (16000 muestras)
+
+t=linspace(0,1.999875,16000);
+t1=sinc(t)*10;
+sinc_wave=t1;
+
+/////FILTRO PARA LA DECODIFICACION
+function y=filtro_sinc(x)
+    n=(size(x)(2)/16000); //////
+    for i=1:n
+        z=x(16000*(i-1)+1:16000*(i-1)+16000);
+        if conv(z,sinc_wave)(16000)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+/////CODIFICADOR 
+function y=encoder_sinc(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,sinc_wave]
+        else
+            a=[a,-sinc_wave]
+        end
+    end
+    y=a
+endfunction
+
+///DECODIFICADOR
+function y=decoder_sinc(x)
+    z=filtro_sinc(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+////FUNCION SINC PARAMETRICA ---> f(t) = b.sinc(a.t)  // frec = 8KHz
+///DURACION 2s (FIJA)
+
+function y=genwavesinc(a,b)
+t=linspace(0,1.999875,16000);
+t1=t.*(a);
+t2=sinc(t1)*(b);
+y=t2;
+endfunction
+
+/////FILTRO PARA LA DECODIFICACION
+function y=filtro_sinc_parametrico(x,a,b)
+    var=genwavesinc(a,b);
+    n=(size(x)(2)/16000); 
+    for i=1:n
+        z=x(16000*(i-1)+1:16000*(i-1)+16000);
+        if sum(conv(z,var))>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+
+/////CODIFICADOR 
+function y=encoder_sinc_p(x,a,b)
+    var=genwavesinc(a,b);
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,var]
+        else
+            a=[a,-var]
+        end
+    end
+    y=a
+endfunction
+
+///DECODIFICADOR
+function y=decoder_sinc_p(x,a,b)
+    z=filtro_sinc_parametrico(x,a,b);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+///////PARTE C
+
+t = 0:1:1000000;
+noise = rand(t, "normal");
+
+///Como agregamos el ruido:
+//vector = vector + K.*noise(1:length(vector))
+//Comparamos que tipo de codificacion es mejor en funcion de la cantidad de ruido que soporta la se;al sin perder informacion, en este caso comparamos segun el numero K.
+
+/*      Prueba de RUIDO      
+  Codificacion cuadrada   de altura 5 y ancho 400,                    K aceptable de ruido 42
+  Codificacion triangular de altura 5 y ancho 400,                    K aceptable de ruido 5
+  Codificacion con sinc   de altura 5 y ancho 400 y "a" 15,           K aceptable de ruido 8
+  Codificacion con sinc   de altura 5 y ancho 400 y "a" 0.1,          K aceptable de ruido 42, frecuencia 0.1 hace que el sinc tienda a una onda cuadrada en una onda de ancho de 400.
+
+  Por lo tanto la mejor codificacion es con pulsos cuadrados
+  Codificacion cuadrada de altura 5 y ancho 2000, K aceptable de ruido 138
+  Entonces cuanto mas ancha sea la onda cuadrada mas ruido puede soportar sin perderse la informacion.
+*/
+
+///////ONDA 4c: altura 5, 8khz, ancho 2000(EQUIVALENTE A 5 PULSOS DE ANCHO 400)
+g4c = linspace(0,0.499875,2000);
+k4c = ones(g4c)*5;
+wave4c = k4c;
+
+//////ONDA 4d: altura 5, 8khz, ancho 400
+g4d = linspace(0,0.499875,400);
+k4d = ones(g4d)*5;
+wave4d = k4d;
+
+
+//------------------------CODIFICADOR (ONDA 4c)
+function y=encoder4c(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,wave4c]
+        else
+            a=[a,-wave4c]
+        end
+    end
+    y=a
+endfunction
+
+/////////                    DECODIFICADOR (ONDA 4c)
+function y=decoder4c(x)
+    z=filtro_ej4c(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c);
+endfunction
+
+////////////               FILTRO (ONDA 4c)
+function y=filtro_ej4c(x)
+    n=(size(x)(2)/2000); 
+    for i=1:n
+        z=x(2000*(i-1)+1:2000*(i-1)+2000);
+        if conv(z,wave4c)(2000)>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+/*
+  Codificacion cuadrada de altura 5 y ancho 2000, K aceptable de ruido 138
+  Entonces cuanto mas ancha sea la onda cuadrada mas ruido puede soportar sin perderse la informacion.
+*/
+
+//--------------------------------------
+//--------------------------------------
+//--------------------------------------
+//--------------------------------------
+
+////EJERCICIO 4 PARTE D: DISEÑO DE UNA MEJOR CODIFICACION:
+
+  /*En la parte C concluimos que la mejor codificacion es la cuadrada
+  Codificacion cuadrada de altura 5 y ancho 2000, K aceptable de ruido 138
+  Entonces cuanto mas ancha sea la onda cuadrada mas ruido puede soportar sin perderse la informacion.
+
+  Probamos otra manera de codificar
+  Por cada 1 que tiene el mensaje en codigo binario, agrego 5 pulsos cuadrados de altura 5 y 400 muetras(total 2000 muestras), 
+  lo mismo con el 0 pero pulsos de altura -5.
+  Y cuando decodifico la señal, hacemos una votacion entre esos 5 pulsos, si 3 o mas son un 1 o un 0, ese es el valor del bit.
+  Conclusion : K aceptable de ruido 143
+  Por lo que es mejor que hacer un pulso de 2000 muestras y decodificarlo con convolusion de la manera habitual.
+*/
+
+//////ONDA 4d: altura 5, 8khz, ancho 400
+g4d = linspace(0,0.499875,400);
+k4d = ones(g4d)*5;
+wave4d = k4d;
+
+///////               CODIFICADOR 5 PULSOS (ONDA 4d)
+function y=encodervoto(x)
+    z=strsplit(strcat(dec2bin(ascii(x))))'
+    a=[]
+    for i=1:size(z)(2)
+        if z(i)=='1' then
+            a=[a,wave4d,wave4d,wave4d,wave4d,wave4d]
+        else
+            a=[a,-wave4d,-wave4d,-wave4d,-wave4d,-wave4d]
+        end
+    end
+    y=a
+endfunction
+/////////////////////////////////////////////
+
+/////////                    DECODIFICADOR POR VOTACION(ONDA 4d)
+function y=decodervoto(x)
+    z1=filtrovoto(x);
+    for j=1:(size(z1)(2)/5)
+        t=0
+        for k=1:5
+            if z1(5*(j-1)+1:5*(j-1)+5)(k)==1 then
+                t=t+1
+            else
+                t=t
+            end
+        end
+        if t>=3 then
+        z2(:,j)=1
+        else
+        z2(:,j)=0
+        end
+    end
+    for i=1:(size(z2)(2)/7)
+        a=z2(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
+
+////////////               FILTRO POR VOTACION(ONDA 4d)
+function y=filtrovoto(x)
+    n=(size(x)(2)/400); //////
+    for i = 1:n
+        z=x(400*(i-1)+1:400*(i-1)+400);
+        if sum(conv(z,wave4d))>0 then
+            y(:,i)=1;
+        else
+            y(:,i)=0;
+        end;
+    end;
+endfunction
+//--------------------------------------
+
+///SI ESTAS DIFERENTES ONDAS DEL EJERCICIO 4 SE USARAN PARA CODIFICAR Y DECODIFICAR SEÑALES DE AUDIO, SE PODRIA IMPLEMENTAR EL MECANISMO DEL EJERCICIO 2
+//PARA DETECTAR EL COMIENZO DE LA SEÑAL, ELIMINAR RUIDO AL PRINCIPIO, Y DETECTAR CUANDO TERMINA LA SEÑAL.
+
