@@ -395,14 +395,9 @@ noise = rand(t, "normal");
 */
 
 ///////ONDA 4c: altura 5, 8khz, ancho 2000(EQUIVALENTE A 5 PULSOS DE ANCHO 400)
-g4c = linspace(0,0.499875,2000);
+g4c = 0:0.000125:0.249875;
 k4c = ones(g4c)*5;
 wave4c = k4c;
-
-//////ONDA 4d: altura 5, 8khz, ancho 400
-g4d = linspace(0,0.499875,400);
-k4d = ones(g4d)*5;
-wave4d = k4d;
 
 
 //------------------------CODIFICADOR (ONDA 4c)
@@ -438,7 +433,7 @@ function y=filtro_ej4c(x)
     n=(size(x)(2)/2000); 
     for i=1:n
         z=x(2000*(i-1)+1:2000*(i-1)+2000);
-        if conv(z,wave4c)(2000)>0 then
+        if sum(conv(z,wave4c))>0 then
             y(:,i)=1;
         else
             y(:,i)=0;
@@ -446,7 +441,7 @@ function y=filtro_ej4c(x)
     end;
 endfunction
 /*
-  Codificacion cuadrada de altura 5 y ancho 2000, K aceptable de ruido 138
+  Codificacion cuadrada de altura 5 y ancho 2000, K aceptable de ruido 113
   Entonces cuanto mas ancha sea la onda cuadrada mas ruido puede soportar sin perderse la informacion.
 */
 
@@ -465,12 +460,12 @@ endfunction
   Por cada 1 que tiene el mensaje en codigo binario, agrego 5 pulsos cuadrados de altura 5 y 400 muetras(total 2000 muestras), 
   lo mismo con el 0 pero pulsos de altura -5.
   Y cuando decodifico la señal, hacemos una votacion entre esos 5 pulsos, si 3 o mas son un 1 o un 0, ese es el valor del bit.
-  Conclusion : K aceptable de ruido 143
+  Conclusion : K aceptable de ruido 95
   Por lo que es mejor que hacer un pulso de 2000 muestras y decodificarlo con convolusion de la manera habitual.
 */
 
 //////ONDA 4d: altura 5, 8khz, ancho 400
-g4d = linspace(0,0.499875,400);
+g4d = 0:0.000125:0.0499875;
 k4d = ones(g4d)*5;
 wave4d = k4d;
 
