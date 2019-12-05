@@ -1,0 +1,61 @@
+//Señal adecuada para filtrar mensaje codificado
+t1=0:0.01:0.24;                             //amplitud 5, 50 valores de base
+t2=0.25:0.01:0.49;
+y1=20*t1;
+y2=-20*t2+10;
+sd1=[y1 y2];
+
+//filtro
+function y=filtro(x)                        //funcion filtro. x es la señal a filtrar
+    n=(size(x)(2)/50);
+    for i=1:n                               //recorro el vector señal de a tramos de 50 muestras
+        z=x(50*(i-1)+1:50*(i-1)+50);
+        if conv(z,sd1)(50)>0 then           //convolucion entre la onda triangular y el tramo de señal correspondiente
+            y(:,i)=1;                       //si la convolucion en el punto medio es mayor a cero, el tramo de la señal representa un 1
+        else
+            y(:,i)=0;                       //si la convolucion en el punto medio es menor a cero, el tramo de la señal representa un 0
+        end;
+    end;                                    //la funcion retorna un vector con los bits que representa la señal
+endfunction 
+
+//decodificador
+function y=deco(x)
+    z=filtro(x);                            //para decodificar la señal x primero se llama a la funcion filtro
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);           //se recorre el vector de bits de a tramos de 7
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));             //se convierten los 7 bits a decimal, y se guardan los valores un el vector c
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)                              //la funcion retorna el mensaje decodificado
+endfunction
+
+
+
+//Parte B
+function y=filtroadaptivo(x)                //funcion filtro adaptivo. x es la señal a decodificar
+    n=(size(x)(2)/50);
+    for i=1:n                               //se recorre la señal de a tramos de 50 muestras
+        z=fft(x(50*(i-1)+1:50*(i-1)+50));   //se hace la antitransformada de Fourier del produto de las transformadas de la señal y la onda triangular
+        if sum(ifft(fft(sd1).*z))>0 then
+            y(:,i)=1;                       //si la suma de los valores de esta funcion es mayor a cero, el tramo de la señal representa un 1
+        else
+            y(:,i)=0;                       //si la suma de los valores de esta funcion es menor a cero, el tramo de la señal representa un 0
+        end;
+    end;                                    //la funcion retorna un vector con los bits que representa la señal
+endfunction
+
+function y=deco_adapt(x)                    //la funcion decodificador adaptativo es igual al anterior decodificador pero llama al filtro adaptativo
+        z=filtroadaptivo(x);
+    for i=1:(size(z)(2)/7)
+        a=z(7*(i-1)+1:7*(i-1)+7);
+        b=0;
+        for j=1:7
+            b=b+(a(j)*2^(7-j));
+        end;
+        c(i)=b;
+    end;
+    y=ascii(c)
+endfunction
