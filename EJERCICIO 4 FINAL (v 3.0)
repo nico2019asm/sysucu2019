@@ -390,7 +390,17 @@ noise = rand(t, "normal");
   Codificacion con sinc   de altura 5 y ancho 400 y "a" 0.1,          K aceptable de ruido 42, frecuencia 0.1 hace que el sinc tienda a una onda cuadrada en una onda de ancho de 400.
 
   Por lo tanto la mejor codificacion es con pulsos cuadrados
-  Codificacion cuadrada de altura 5 y ancho 2000, K aceptable de ruido 138
+  
+//--------------------------------------
+//--------------------------------------
+//--------------------------------------
+//--------------------------------------
+  
+  ////EJERCICIO 4 PARTE D: DISEÑO DE UNA MEJOR CODIFICACION:
+ /*Como en la parte C concluimos que la mejor codificacion es la cuadrada:
+  Probamos codificar la señal de la siguiente manera:
+  Por cada 1 que tiene el mensaje en codigo binario, agrego 5 pulsos cuadrados de altura 5 y 400 muetras(total 2000 muestras), 
+  lo mismo con el 0 pero pulsos de altura -5. resulto en K aceptable de ruido 113
   Entonces cuanto mas ancha sea la onda cuadrada mas ruido puede soportar sin perderse la informacion.
 */
 
@@ -450,18 +460,12 @@ endfunction
 //--------------------------------------
 //--------------------------------------
 
-////EJERCICIO 4 PARTE D: DISEÑO DE UNA MEJOR CODIFICACION:
 
-  /*En la parte C concluimos que la mejor codificacion es la cuadrada
-  Codificacion cuadrada de altura 5 y ancho 2000, K aceptable de ruido 138
-  Entonces cuanto mas ancha sea la onda cuadrada mas ruido puede soportar sin perderse la informacion.
-
-  Probamos otra manera de codificar
-  Por cada 1 que tiene el mensaje en codigo binario, agrego 5 pulsos cuadrados de altura 5 y 400 muetras(total 2000 muestras), 
-  lo mismo con el 0 pero pulsos de altura -5.
-  Y cuando decodifico la señal, hacemos una votacion entre esos 5 pulsos, si 3 o mas son un 1 o un 0, ese es el valor del bit.
+/*  
+  Probamos otra manera de decodificar esta forma de codificar el mensaje de la siguiente manera:
+  Hacemos una votacion entre esos 5 pulsos, si 3 o mas son un 1 o un 0, ese es el valor del bit.
   Conclusion : K aceptable de ruido 95
-  Por lo que es mejor que hacer un pulso de 2000 muestras y decodificarlo con convolusion de la manera habitual.
+  Al contrario de lo que pensamos, este metodo de decodificar la señal es mas vulnerable al ruido, que el metodo de decodificacion con el que veniamos trabajando.
 */
 
 //////ONDA 4d: altura 5, 8khz, ancho 400
